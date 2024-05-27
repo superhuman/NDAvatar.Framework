@@ -1,30 +1,16 @@
-// swift-tools-version:5.1
-// The swift-tools-version declares the minimum version of Swift required to build this package.
-
+// swift-tools-version:5.10
 import PackageDescription
 
 let package = Package(
     name: "NDAvatarView",
     platforms: [
-          .iOS(.v13)
-      ],
-    products: [
-        // Products define the executables and libraries produced by a package, and make them visible to other packages.
-        .library(
-            name: "NDAvatarView",
-            targets: ["NDAvatarView"]),
+        .iOS(.v16),
     ],
-    dependencies: [
-
+    products: [
+        .library(name: "NDAvatarView", targets: ["NDAvatarView"]),
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages which this package depends on.
-        .target(
-            name: "NDAvatarView",
-            dependencies: []),
-        .testTarget(
-            name: "NDAvatarViewTests",
-            dependencies: ["NDAvatarView"]),
+        .target(name: "NDAvatarView", dependencies: []),
+        .testTarget(name: "NDAvatarViewTests", dependencies: ["NDAvatarView"]),
     ]
 )

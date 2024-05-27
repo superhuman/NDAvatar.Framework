@@ -6,35 +6,31 @@
 //  Copyright © 2019 Neone. All rights reserved.
 //
 #if !os(macOS)
-import Foundation
 import UIKit
 
-class AvatarHelper {
-    
-    static func convertToAvatarData(profileName: String, avatarString: String?) -> (AvatarImageViewDataSource) {
-        
+enum AvatarHelper {
+    static func convertToAvatarData(profileName: String, avatarString: String?) -> AvatarImageViewDataSource {
         var profileAvatar: UIImage?
-        
+
         if let avatarEncodedString = avatarString {
-            if !avatarEncodedString.isEmpty{
+            if !avatarEncodedString.isEmpty {
                 if let avatarData = Data(base64Encoded: avatarEncodedString) {
                     profileAvatar = UIImage(data: avatarData) ?? nil
                 }
             }
         }
-        
+
         struct AvatarData: AvatarImageViewDataSource {
             var name: String
             var avatar: UIImage?
-            
+
             init(profileName: String, profileAvatar: UIImage?) {
                 name = profileName
                 avatar = profileAvatar
             }
         }
-        
-        let avatarDataSource  = AvatarData(profileName: profileName, profileAvatar: profileAvatar)
-        return avatarDataSource
+
+        return AvatarData(profileName: profileName, profileAvatar: profileAvatar)
     }
 }
 #endif
