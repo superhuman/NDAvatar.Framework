@@ -26,7 +26,7 @@ import UIKit
 /// The background color and image will be set to `clear()` and `nil` at initialisation, so these values should not be
 /// set in the storyboard or passed in at initialisation time.
 open class AvatarImageView: UIImageView {
-    static let colorCache = ColorCache<NSString>()
+    private static let colorCache = ColorCache()
 
     /// The data source to populate the Avatar Image
     open var dataSource: AvatarImageViewDataSource? {
@@ -89,96 +89,86 @@ open class AvatarImageView: UIImageView {
     }
 
     func drawImageWith(data: AvatarImageViewDataSource) -> UIImage {
-        let scale = UIScreen.main.scale
+        UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0)
 
-        UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, scale)
-        let context = UIGraphicsGetCurrentContext()
-
-        guard context != nil else {
+        guard let context = UIGraphicsGetCurrentContext() else {
             return UIImage()
         }
 
         switch configuration.shape {
         case .circle:
-            let circlePath = CGPath(ellipseIn: self.bounds, transform: nil)
-            context!.addPath(circlePath)
-            context!.clip()
+            let circlePath = CGPath(ellipseIn: bounds, transform: nil)
+            context.addPath(circlePath)
+            context.clip()
         case .mask(let image):
             mask(layer: layer, withImage: image)
         default:
             break
         }
 
-        var bgColor: CGColor! = nil
+        var bgColor: UIColor
         if let color = data.bgColor {
-            bgColor = color.cgColor
+            bgColor = color
         } else if let color = configuration.bgColor {
-            bgColor = color.cgColor
+            bgColor = color
         } else {
-            bgColor = backgroundColorFor(hash: data.avatarId)
+            bgColor = backgroundColor(forHash: data.avatarId)
         }
 
-        context!.setFillColor(bgColor)
-        context!.fill(self.bounds)
+        context.setFillColor(bgColor.cgColor)
+        context.fill(bounds)
 
         let initials = data.initials as NSString
-        let textAttrs = textAttributesFrom(data: data)
+        let textAttrs = textAttributes()
         let textRectSize = initials.size(withAttributes: textAttrs)
-        let textRect = CGRect(x: bounds.size.width / 2 - textRectSize.width / 2,
-                              y: bounds.size.height / 2 - textRectSize.height / 2,
-                              width: textRectSize.width,
-                              height: textRectSize.height)
+        let textRect = CGRect(
+            x: bounds.size.width / 2 - textRectSize.width / 2,
+            y: bounds.size.height / 2 - textRectSize.height / 2,
+            width: textRectSize.width,
+            height: textRectSize.height
+        )
 
         initials.draw(in: textRect, withAttributes: textAttrs)
 
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
 
-        if let image = image {
+        if let image {
             return image
         } else {
             return UIImage()
         }
     }
 
-    func textAttributesFrom(data: AvatarImageViewDataSource) -> [NSAttributedString.Key: Any] {
+    private func textAttributes() -> [NSAttributedString.Key: Any] {
         var attributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: configuration.textColor.resolvedColor(with: traitCollection),
         ]
         let fontSize = bounds.size.width * configuration.textSizeFactor
 
         if let fontName = configuration.fontName {
-            attributes[NSAttributedString.Key.font] = UIFont(name: fontName, size: fontSize)
+            attributes[.font] = UIFont(name: fontName, size: fontSize)
         } else {
-            attributes[NSAttributedString.Key.font] = UIFont.systemFont(ofSize: fontSize)
+            attributes[.font] = UIFont.systemFont(ofSize: fontSize)
         }
 
         let baselineOffset = fontSize * configuration.baselineOffsetFactor
-        attributes[NSAttributedString.Key.baselineOffset] = NSNumber(value: Double(baselineOffset))
+        attributes[.baselineOffset] = NSNumber(value: Double(baselineOffset))
 
         return attributes
     }
 
     // MARK: - Utilities
 
-    private func backgroundColorFor(hash: Int) -> CGColor {
-        if let colorString = Self.colorCache[hash] {
-            let colors = colorString.components(separatedBy: "^")
-
-            let red = CGFloat((colors[0] as NSString).doubleValue)
-            let green = CGFloat((colors[1] as NSString).doubleValue)
-            let blue = CGFloat((colors[2] as NSString).doubleValue)
-
-            return UIColor(red: red, green: green, blue: blue, alpha: 1.0).cgColor
+    private func backgroundColor(forHash hash: Int) -> UIColor {
+        if let color = Self.colorCache[hash] {
+            return color
         } else {
             let red = CGFloat.random(in: 0..<1)
             let green = CGFloat.random(in: 0..<1)
             let blue = CGFloat.random(in: 0..<1)
-
-            let color = UIColor(red: red, green: green, blue: blue, alpha: 1.0).cgColor
-            let stringRepresentation = "\(red)^\(green)^\(blue)"
-
-            Self.colorCache[hash] = stringRepresentation as NSString?
+            let color = UIColor(red: red, green: green, blue: blue, alpha: 1.0)
+            Self.colorCache[hash] = color
             return color
         }
     }

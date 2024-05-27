@@ -9,23 +9,23 @@
 import UIKit
 
 @IBDesignable
-public class UIViewAvatarX: UIView {
+public final class UIViewAvatarX: UIView {
 
     // MARK: - Gradient
 
-    @IBInspectable public var firstColor: UIColor = UIColor.white {
+    @IBInspectable public var firstColor = UIColor.white {
         didSet {
             updateView()
         }
     }
 
-    @IBInspectable public var secondColor: UIColor = UIColor.white {
+    @IBInspectable public var secondColor = UIColor.white {
         didSet {
             updateView()
         }
     }
 
-    @IBInspectable public var horizontalGradient: Bool = false {
+    @IBInspectable public var horizontalGradient = false {
         didSet {
             updateView()
         }
@@ -35,7 +35,7 @@ public class UIViewAvatarX: UIView {
         CAGradientLayer.self
     }
 
-    @IBInspectable public var background: UIColor = UIColor.clear {
+    @IBInspectable public var background = UIColor.clear {
         didSet {
             layer.backgroundColor = background.cgColor
         }
@@ -43,7 +43,7 @@ public class UIViewAvatarX: UIView {
 
     // MARK: - Border
 
-    @IBInspectable public var borderColor: UIColor = UIColor.clear {
+    @IBInspectable public var borderColor = UIColor.clear {
         didSet {
             layer.borderColor = borderColor.cgColor
         }
@@ -71,9 +71,9 @@ public class UIViewAvatarX: UIView {
         }
     }
 
-    func updateView() {
-        let layer = self.layer as! CAGradientLayer
-        layer.colors = [ firstColor.cgColor, secondColor.cgColor ]
+    private func updateView() {
+        let layer = layer as! CAGradientLayer
+        layer.colors = [firstColor.cgColor, secondColor.cgColor]
 
         if horizontalGradient {
             layer.startPoint = CGPoint(x: 0.0, y: 0.5)

@@ -6,26 +6,20 @@
 //  Copyright © 2016 Ayush Newatia. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
-final class ColorCache<ValueType: AnyObject> {
-    private let cache = NSCache<NSNumber, ValueType>()
+final class ColorCache {
+    private let cache = NSCache<NSNumber, UIColor>()
 
-    lazy var notificationCenter = NotificationCenter.default
-
-    deinit {
-        notificationCenter.removeObserver(self)
-    }
-
-    subscript(key: Int) -> ValueType? {
+    subscript(key: Int) -> UIColor? {
         get {
-            cache.object(forKey: NSNumber(value: key)) as ValueType?
+            cache.object(forKey: key as NSNumber)
         }
         set {
-            if let value: ValueType = newValue {
-                cache.setObject(value, forKey: NSNumber(value: key))
+            if let newValue {
+                cache.setObject(newValue, forKey: key as NSNumber)
             } else {
-                cache.removeObject(forKey: NSNumber(value: key))
+                cache.removeObject(forKey: key as NSNumber)
             }
         }
     }

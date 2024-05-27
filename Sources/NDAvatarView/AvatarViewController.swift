@@ -47,8 +47,8 @@ struct ColorConfig: AvatarImageViewConfiguration {
 
 @IBDesignable open class AvatarViewController: UIView {
     public var avatarViewData: AvatarViewData?
-    var avatarFrame: UIViewAvatarX!
     public var avatarImageView: AvatarImageView!
+    private var avatarFrame: UIViewAvatarX!
 
     @IBInspectable public var profileImage: UIImage? {
         didSet {
@@ -58,7 +58,7 @@ struct ColorConfig: AvatarImageViewConfiguration {
         }
     }
 
-    @IBInspectable public var isRound: Bool = false {
+    @IBInspectable public var isRound = false {
         didSet {
             if isRound == true {
                 setToRound()
@@ -68,7 +68,6 @@ struct ColorConfig: AvatarImageViewConfiguration {
         }
     }
 
-    var currentCorner: CGFloat = 0
     @IBInspectable public var cornerRoundness: Double = 0 {
         didSet {
             avatarFrame.cornerRadius = CGFloat(cornerRoundness)
@@ -81,7 +80,7 @@ struct ColorConfig: AvatarImageViewConfiguration {
         }
     }
 
-    @IBInspectable public var borderColor: UIColor = UIColor.white {
+    @IBInspectable public var borderColor = UIColor.white {
         didSet {
             avatarFrame.borderColor = borderColor
         }
@@ -103,14 +102,14 @@ struct ColorConfig: AvatarImageViewConfiguration {
         let avatarSize = frame.height
 
         avatarFrame =  UIViewAvatarX(frame: CGRect(x: 0, y: 0, width: avatarSize, height: avatarSize))
-        self.addSubview(avatarFrame)
-        avatarFrame.frame = self.bounds
+        addSubview(avatarFrame)
+        avatarFrame.frame = bounds
         avatarFrame.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         avatarFrame.maskToBounds = true
 
         avatarImageView =  AvatarImageView(frame: CGRect(x: 0, y: 0, width: avatarSize, height: avatarSize))
         avatarFrame.addSubview(avatarImageView)
-        avatarImageView.frame = self.bounds
+        avatarImageView.frame = bounds
         avatarImageView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
     }
 
@@ -159,8 +158,7 @@ struct ColorConfig: AvatarImageViewConfiguration {
     }
 
     public func setToRound() {
-        currentCorner = avatarFrame.cornerRadius
-        avatarFrame.cornerRadius = self.frame.width/2
+        avatarFrame.cornerRadius = frame.width/2
         configureRoundAvatar()
     }
 
@@ -169,12 +167,12 @@ struct ColorConfig: AvatarImageViewConfiguration {
         configureDefaultAvatar()
     }
 
-    fileprivate func configureRoundAvatar() {
+    private func configureRoundAvatar() {
         struct Config: AvatarImageViewConfiguration { var shape: Shape = .circle }
         avatarImageView.configuration = Config()
     }
 
-    fileprivate func configureDefaultAvatar() {
+    private func configureDefaultAvatar() {
         struct Config: AvatarImageViewConfiguration { var shape: Shape = .square }
         avatarImageView.configuration = Config()
     }
